@@ -6,7 +6,7 @@ class Player(ABC):
 		self.char = char
 		
 	@abstractmethod
-	def choose_action(self, state):
+	def choose_action(self, game):
 		pass
 	
 class Game:
