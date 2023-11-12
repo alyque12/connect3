@@ -29,3 +29,10 @@ class Game:
 			util.pprint(self.init_state)
 		print(f"{self.init_state.winner()} wins")
 		
+	def opponent(self, player):
+		if self.p1 == player:
+			opponent = self.p2.char
+		else:
+			opponent = self.p1.char
+		return opponent
+		

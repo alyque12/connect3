@@ -7,15 +7,14 @@ import util
 class RandomPlayer(Player):
 	def __init__(self, char) -> None:
 		super().__init__(char)
-		
+
 	def choose_action(self, game):
 		choice = randint(0, len(game.init_state.actions(self.char))-1)
 		return game.init_state.actions(self.char)[choice]
-	
+
 class MinimaxPlayer(Player):
 	def __init__(self, char) -> None:
 		super().__init__(char)
-		self.choice = None
 		
 	def _eval_function(self, state, treeDepth):
 		if state.winner() == self.char:
@@ -25,35 +24,32 @@ class MinimaxPlayer(Player):
 		else:
 			return 0
 
-	def minimax(self, game, treeDepth, isMax):
-		if (game.init_state.game_over()):
-			return self._eval_function(game.init_state, treeDepth)
-			
+	def minimax(self, game:Game, depth:int, isMax:bool):
+		if depth == 5 or game.init_state.game_over():
+			return self._eval_function(game.init_state, depth)
+		
 		if isMax:
-			value = -1000000
-			for action in game.init_state.actions(game.p1.char):
+			value = -100000
+			for action in game.init_state.actions(self.char):
 				new_game = Game(game.p1, game.p2, game.init_state.clone().execute(action))
-				value = max(value, self.minimax(new_game, treeDepth+1, not isMax))
+				value = max(value, self.minimax(new_game, depth+1, False))
 			return value
 		else:
-			value = 1000000
-			for action in game.init_state.actions(game.p2.char):
+			value = 100000
+			for action in game.init_state.actions(game.opponent(self)):
 				new_game = Game(game.p1, game.p2, game.init_state.clone().execute(action))
-				value = min(value, self.minimax(new_game, treeDepth+1, not isMax))
+				value = min(value, self.minimax(new_game, depth+1, True))
 			return value
 
 	def choose_action(self, game):
-		bestValue = -1000000
+		bestValue = -100000
 		choice = None
 		
 		for action in game.init_state.actions(self.char):
 			new_game = Game(game.p1, game.p2, game.init_state.clone().execute(action))
 			value = self.minimax(new_game, 0, False)
-			
+
 			if value > bestValue:
 				bestValue = value
 				choice = action
-			print(f'vale: {value}, best value: {bestValue}')
-			print(f'action: {action}')
-
 		return choice
